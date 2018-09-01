@@ -1,0 +1,2 @@
+# MoviePass-App 
+Shiny app to search and filter movies for MoviePass users in the selected locations. MoviePass has announced that it is limiting the movies that subscribers can see for the foreseeable future, which means that users can not go watch a movie right away after they find a high-rated one by IMDb. This app is able to provide a list of MoviePass-supported movies sorted by the ratings and number of votes from IMDb.com. What's more, not only you will be able to preview the poster, it also allows users to customize when and where they would like to watch it. 
