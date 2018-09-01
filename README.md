@@ -18,7 +18,7 @@ Shiny app to search and filter movies for **MoviePass** users in the selected lo
   <img src="https://github.com/zhiiyang/MoviePass/blob/master/www/DemoPicture.png" width="1000" >
 </p>
 
-[This link](https://github.com/zhiiyang/MoviePass/blob/master/www/MoviePassShinyDemo.mp4) is a quick demo on how to use the MoviePass-app. [Click here to try it.](https://zhiyang.shinyapps.io/moviepass/).
+[This link](https://github.com/zhiiyang/MoviePass/blob/master/www/MoviePassShinyDemo.mp4) is a quick demo on how to use the MoviePass-app. [Click here to try it](https://zhiyang.shinyapps.io/moviepass/).
 
 ## Support
 
