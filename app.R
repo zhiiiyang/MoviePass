@@ -139,7 +139,7 @@ server <- function(input, output) {
       
 
     })
-    rsconnect::deployApp('path/to/your/app')
+    # rsconnect::deployApp('path/to/your/app')
     
     # output$nText <- renderPrint({
     #   input$submit
