@@ -1,0 +1,10 @@
+name: moviepass
+title:
+username:
+account: zhiyang
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 416668
+bundleId: 1565134
+url: https://zhiyang.shinyapps.io/moviepass/
+when: 1535822147.55727
