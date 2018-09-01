@@ -22,5 +22,4 @@ Shiny app to search and filter movies for **MoviePass** users in the selected lo
 
 ## Support
 
-More features can be added per users' request. Please contact me at zyang895@gmail.com.
-
+More features can be added per users' request. Please contact me at zyang895@gmail.com. I also want to thank Ugonna Ihenacho and Chun-Chieh (Ethan) Wang for helping me test the website.  
