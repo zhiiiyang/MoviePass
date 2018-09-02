@@ -32,7 +32,7 @@ ui <- fluidPage(
   fluidRow(#div(style = "height:80px;background-color: white;", ""),
       column(3, 
              offset=1,
-             p(strong("MoviePass"), "only allows you to watch a few movies. Don't worry!!! We've got you covered. You can instantaneously 
+             p(strong("MoviePass"), "only allows you to watch a few movies per day. Don't worry!!! We've got you covered. You can instantaneously 
                know",strong("when and where")," to watch the highest-rated movies by IMDb near your neighborhood."),
              
              imageOutput("poster", inline = TRUE)
@@ -48,10 +48,10 @@ ui <- fluidPage(
       
       column(4,
 
-             textInput("zip", h4("Location"),
+             textInput("zip", h4("Please enter your Zipcode:"),
                        value = "91803"),
              
-             sliderInput("number", h4("Number of nearby theaters"),
+             sliderInput("number", h4("Number of nearby theaters:"),
                          min = 0, max = 5, value = "2"), 
              
              actionButton("goButton", "Go!"),
@@ -99,7 +99,7 @@ server <- function(input, output) {
     
     ntext <- eventReactive(input$goButton, {
         if(is.null(input[[paste0('day',which(tabNames == input$Dates),"_rows_selected")]])==TRUE){
-          "Select a movie!"
+          "Please select a movie on the left first."
         }else{
           withProgress(message = 'Searching', value = 0, {
             # Number of times we'll go through the loop
