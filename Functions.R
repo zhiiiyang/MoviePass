@@ -31,7 +31,7 @@ GenerateTimeSchedule<-function(MovieName=MovieName, location=location, number=nu
   theater <- theater[1:min(length(theater), number)]
   schedule <- schedule[1:min(length(schedule), number)]
   
-  if (any(as.numeric(gregexpr("Atlantic",theater))>0)==TRUE | any(as.numeric(gregexpr("Edwards",theater))>0)==TRUE){
+  if (length(theater)!=0){
     # print(theater)
     # print(schedule)
     time_detail <- str_match_all(schedule,"([1]?[0-9][:][0-9][0-9])([ap][m])") %>% lapply(function(x) x[,1])
