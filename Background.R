@@ -1,57 +1,47 @@
+#Loading the rvest package
 library(rvest)
-library(utils)
-library(RCurl)
-library(XML)
-library(magrittr)
 library(stringr)
-library(curl)
-library(omdbapi)
-library(dplyr)
-library(RJSONIO)
-library(DT)
-library(lubridate) 
-
+library(imdbapi)
 
 source("Functions.R")
 
 if ((Sys.Date() - as.Date(file.info("data/MovieNameID.rdata", extra_cols = TRUE)$mtime) )>7){
-  h <- read_html("https://www.moviepass.com/movies/")
-  nodes  <- html_nodes(h, '.push-top-lg') 
+  webpage <- read_html("https://www.moviepass.com/movies/")
   
-  date.index <- which(html_text(nodes) == "")
+  input <- html_nodes(webpage, 'script')[3] %>%  html_text() %>% str_split("var") 
+  
+  Dates <- input[[1]][[6]] %>% str_match_all("'.+'") %>% unlist() %>% str_replace_all("'","")
+  imgs <- input[[1]][5] %>% str_split(":", simplify = TRUE) %>% c() %>% str_extract_all("(/)([^ ]+).jpg") 
+  
+  %>% str_split("]", simplify = TRUE) %>% c() %>% str_extract_all("(/)([^ ]+).jpg") 
 
-  dates <- html_text(nodes)[-date.index]
+  Schedules <- lapply(imgs, function(x) str_split(x, "/")) %>% 
+               lapply(., function(x) str_subset(unlist(x), ".jpg") %>% 
+                       str_replace(".jpg","")) 
+            
+  Names <- Schedules %>% unlist() %>% unique() %>% sapply(FindName)
   
-  MoviePassSchedule <- rep(list(NA), length(dates))
-  MoviePassImage <- rep(list(NA), length(dates))
   
-  #names(MoviePassSchedule) <- as.character(sapply(strsplit(dates, ", "), function(x) x[[1]]))
-  Month2Dates <- as.list(1:12)
-  names(Month2Dates) <- format(ISOdate(2018, 1:12,1),"%B")
+  imdbID <- sapply(Names, FindIMDB) %>% unlist()
   
-  names(MoviePassSchedule) <- lapply(strsplit(sapply(strsplit(dates,", "), function(x) x[[2]]), " "), 
-         function(x) paste0(Month2Dates[[x[[1]]]],"/", as.numeric(gsub("([0-9]+).*$", "\\1", x[[2]]))))
-
+  Ratings<-sapply(1:length(imdbID), function(x) {res <- unique(find_by_id(imdbID[x])$imdbRating);
+                                      ifelse(length(res)!=0, res, unique(find_by_title(Names[x])$imdbRating))}) 
   
-  for (i in 1:length(MoviePassSchedule)){
-    image <- imgs[i] %>% html_nodes(".movies-img") %>% html_attr("src")
-    MoviePassSchedule[[i]] <- sapply(strsplit(image, "\\/|\\.|\\_"), '[[', 5)
-    MoviePassImage[[i]] <- nodes[-image.index][[i]] %>% html_nodes("img") %>% html_attr("src")
-  }
-  MovieNames <- sapply(unique(unlist(MoviePassSchedule)), FindName)
-  MovieNameID<-cbind(MovieNames, imdbID=sapply(MovieNames, FindIMDB) %>% unlist(), url=unique(unlist(MoviePassImage)))
+  Votes<-sapply(1:length(imdbID), function(x) {res <- unique(find_by_id(imdbID[x])$imdbVotes);
+                                      ifelse(length(res)!=0, res, unique(find_by_title(Names[x])$imdbVotes))})
   
-  MovieNameID[which(rownames(MovieNameID) %in% 
-                   c("SKATEKITCHEN","MADELINESMADELINE","MISSIONIMPOSSIBLEFALLOUT")),
-                    "imdbID"]<-c("tt7545566", "tt6101602","tt4912910")
-  MovieNameID<-as.data.frame(MovieNameID, stringsAsFactors = FALSE)
+  MovieTables <- data.frame(Names=Names, imdbID=imdbID, url=unique(unlist(imgs)),
+                            Ratings=Ratings, Votes=Votes) 
   
-  for(i in 1:nrow(MovieNameID)){
-    download.file(paste0("https://www.moviepass.com", as.character(MovieNameID$url[i])),paste0('www/',MovieNameID$imdbID[i],'.jpg'), mode = 'wb')
+  MovieTables <- lapply(1:Schedules, function(x) MovieTables[x,])
+  
+  for(i in 1:nrow(MovieTables)){
+    download.file(paste0("https://www.moviepass.com", as.character(MovieTables$url[i])),paste0('www/',MovieTables$Names[i],'.jpg'), mode = 'wb')
   }
   
-  save(MoviePassSchedule, file="data/MoviePassSchedule.rdata")
-  save(MovieNameID, file="data/MovieNameID.rdata")
+  save(MovieTables, file="data/MovieTables.rdata")
+  save(Dates, Names, Schedules, file="data/MovieNameDates.rdata")
+
 }
 
 if (Sys.Date() != as.Date(file.info("data/title.ratings.tsv.gz", extra_cols = TRUE)$mtime) ){
@@ -60,7 +50,4 @@ if (Sys.Date() != as.Date(file.info("data/title.ratings.tsv.gz", extra_cols = TR
   save(MovieRatings, file="data/MovieRatings.rdata")
 }
 
-load("data/MovieNameID.rdata")
-load("data/MovieRatings.rdata")
-load("data/MoviePassSchedule.rdata")
 
